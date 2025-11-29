@@ -45,15 +45,19 @@ for team_data in teams_data:
 
 # Create user profiles
 for i, user in enumerate(users):
-    if not hasattr(user, 'profile'):
-        profile = UserProfile.objects.create(
-            user=user,
-            team=teams[i % len(teams)],
-            bio=f"I am {user.first_name} {user.last_name}, passionate about fitness",
-            age=20 + (i * 5),
-            fitness_level=['beginner', 'intermediate', 'advanced'][i % 3]
-        )
+    profile, created = UserProfile.objects.get_or_create(
+        user=user,
+        defaults={
+            'team': teams[i % len(teams)],
+            'bio': f"I am {user.first_name} {user.last_name}, passionate about fitness",
+            'age': 20 + (i * 5),
+            'fitness_level': ['beginner', 'intermediate', 'advanced'][i % 3]
+        }
+    )
+    if created:
         print(f"Created profile for {user.username}")
+    else:
+        print(f"Found profile for {user.username}")
 
 # Create test activities
 activities_data = [
